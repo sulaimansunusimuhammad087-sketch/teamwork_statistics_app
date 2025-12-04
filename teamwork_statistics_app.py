@@ -4,13 +4,22 @@
 
 import streamlit as st
 import numpy as np
+import pandas as pd
+from fpdf import FPDF
+import tempfile
 
+# --------------------
+# App Config & Welcome
+# --------------------
 st.set_page_config(page_title="Teamwork Statistics App", layout="wide")
 
 st.title("Teamwork Statistics App")
 st.markdown("""
+**Welcome to Teamwork Statistics App!** 🎉  
+
 **Developer:** Sulaiman Sunusi (Sir Mean) DS  
-**Purpose:** Complete statistics app for university students
+**Purpose:** Complete statistics app for university students  
+**Note:** This app works fully in your browser and is safe to use.
 """)
 
 # --------------------
@@ -56,5 +65,44 @@ if len(data_array) > 0:
     col4.metric("Std Dev", f"{np.std(data_array, ddof=1):.4f}")
     
     st.write(f"Min: {np.min(data_array)}, Max: {np.max(data_array)}, Range: {np.max(data_array)-np.min(data_array)}")
+
+# --------------------
+# Graphs (using Streamlit built-in charts)
+# --------------------
+if len(data_array) > 0:
+    st.header("Graphs")
+    graph_type = st.selectbox("Select Graph Type:", ["Line Chart", "Area Chart", "Bar Chart"])
+    df = pd.DataFrame({"Values": data_array})
+    if graph_type == "Line Chart":
+        st.line_chart(df)
+    elif graph_type == "Area Chart":
+        st.area_chart(df)
+    elif graph_type == "Bar Chart":
+        st.bar_chart(df)
+
+# --------------------
+# PDF Report
+# --------------------
+st.header("PDF Report")
+if st.button("Generate PDF Report"):
+    if len(data_array) == 0:
+        st.warning("No data to generate report.")
+    else:
+        pdf = FPDF()
+        pdf.add_page()
+        pdf.set_font("Arial", "B", 16)
+        pdf.cell(0, 10, "Teamwork Statistics App Report", ln=True, align="C")
+        pdf.set_font("Arial", "", 12)
+        pdf.ln(10)
+        pdf.multi_cell(0, 8, f"Developer: Sulaiman Sunusi (Sir Mean) DS")
+        pdf.multi_cell(0, 8, f"Data: {data_list}")
+        pdf.multi_cell(0, 8, f"Mean: {np.mean(data_array):.4f}")
+        pdf.multi_cell(0, 8, f"Median: {np.median(data_array):.4f}")
+        pdf.multi_cell(0, 8, f"Variance: {np.var(data_array, ddof=1):.4f}")
+        pdf.multi_cell(0, 8, f"Std Dev: {np.std(data_array, ddof=1):.4f}")
+        pdf_file = tempfile.NamedTemporaryFile(delete=False, suffix=".pdf")
+        pdf.output(pdf_file.name)
+        st.success(f"PDF report generated: {pdf_file.name}")
+        st.download_button("Download PDF", pdf_file.name)
 
 st.write("💡 This app works fully in your browser. Share it with friends!")
