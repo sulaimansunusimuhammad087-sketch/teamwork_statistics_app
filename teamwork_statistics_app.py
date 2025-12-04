@@ -4,12 +4,6 @@
 
 import streamlit as st
 import numpy as np
-import pandas as pd
-import matplotlib.pyplot as plt
-from fpdf import FPDF
-import tempfile
-import os
-from datetime import datetime
 
 st.set_page_config(page_title="Teamwork Statistics App", layout="wide")
 
@@ -62,64 +56,5 @@ if len(data_array) > 0:
     col4.metric("Std Dev", f"{np.std(data_array, ddof=1):.4f}")
     
     st.write(f"Min: {np.min(data_array)}, Max: {np.max(data_array)}, Range: {np.max(data_array)-np.min(data_array)}")
-
-# --------------------
-# Graphs
-# --------------------
-if len(data_array) > 0:
-    st.header("Graphs")
-    graph_type = st.selectbox("Select Graph Type:", ["Histogram", "Line", "Bar"])
-    fig, ax = plt.subplots()
-    if graph_type == "Histogram":
-        ax.hist(data_array, bins='auto', edgecolor='black')
-    elif graph_type == "Line":
-        ax.plot(data_array, marker='o')
-    else:
-        ax.bar(range(len(data_array)), data_array)
-    st.pyplot(fig)
-
-# --------------------
-# Hypothesis Tests & CI (Removed scipy)
-# --------------------
-if len(data_array) > 0:
-    st.header("Statistical Tests")
-    st.info("T-test and Confidence Interval features are not available in this version.")
-
-# --------------------
-# Correlation & Regression
-# --------------------
-st.header("Correlation & Regression")
-if st.button("Correlation & Regression Demo"):
-    st.info("Add two numeric lists in manual input to calculate correlation and regression.")
-
-# --------------------
-# ANOVA & Chi-square
-# --------------------
-st.header("ANOVA & Chi-square")
-st.info("Add multiple groups (as separate comma lists) to run ANOVA or Chi-square tests in future updates.")
-
-# --------------------
-# PDF Report
-# --------------------
-st.header("PDF Report")
-if st.button("Generate PDF Report"):
-    if len(data_array) == 0:
-        st.warning("No data to generate report.")
-    else:
-        pdf = FPDF()
-        pdf.add_page()
-        pdf.set_font("Arial", "B", 16)
-        pdf.cell(0, 10, "Teamwork Statistics App Report", ln=True, align="C")
-        pdf.set_font("Arial", "", 12)
-        pdf.ln(10)
-        pdf.multi_cell(0, 8, f"Data: {data_list}")
-        pdf.multi_cell(0, 8, f"Mean: {np.mean(data_array):.4f}")
-        pdf.multi_cell(0, 8, f"Median: {np.median(data_array):.4f}")
-        pdf.multi_cell(0, 8, f"Variance: {np.var(data_array, ddof=1):.4f}")
-        pdf.multi_cell(0, 8, f"Std Dev: {np.std(data_array, ddof=1):.4f}")
-        pdf_file = tempfile.NamedTemporaryFile(delete=False, suffix=".pdf")
-        pdf.output(pdf_file.name)
-        st.success(f"PDF report generated: {pdf_file.name}")
-        st.download_button("Download PDF", pdf_file.name)
 
 st.write("💡 This app works fully in your browser. Share it with friends!")
