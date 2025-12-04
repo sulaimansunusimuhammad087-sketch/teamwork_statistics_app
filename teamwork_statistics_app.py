@@ -5,7 +5,6 @@
 import streamlit as st
 import numpy as np
 import pandas as pd
-from scipy import stats
 import matplotlib.pyplot as plt
 from fpdf import FPDF
 import tempfile
@@ -80,26 +79,11 @@ if len(data_array) > 0:
     st.pyplot(fig)
 
 # --------------------
-# Hypothesis Tests & CI
+# Hypothesis Tests & CI (Removed scipy)
 # --------------------
 if len(data_array) > 0:
     st.header("Statistical Tests")
-    st.subheader("T-test (One-sample)")
-    mu = st.number_input("Test mean (μ):", value=0.0, key="ttest_mu")
-    if st.button("Run One-sample T-test"):
-        t_stat, p_val = stats.ttest_1samp(data_array, mu)
-        st.write(f"T-statistic: {t_stat:.4f}, p-value: {p_val:.4f}")
-        if p_val < 0.05:
-            st.success("Reject null hypothesis at α=0.05")
-        else:
-            st.info("Fail to reject null hypothesis at α=0.05")
-
-    st.subheader("Confidence Interval (95%)")
-    if st.button("Calculate CI"):
-        mean = np.mean(data_array)
-        sem = stats.sem(data_array)
-        ci = stats.t.interval(0.95, len(data_array)-1, loc=mean, scale=sem)
-        st.write(f"95% Confidence Interval: {ci}")
+    st.info("T-test and Confidence Interval features are not available in this version.")
 
 # --------------------
 # Correlation & Regression
